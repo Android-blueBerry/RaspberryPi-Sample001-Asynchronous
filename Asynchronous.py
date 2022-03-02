@@ -3,6 +3,7 @@
 import bluetooth
 import subprocess
 import threading
+import sys
 
 subprocess.call("sudo hciconfig hci0 piscan", shell=True) # discoverable on
 
@@ -27,18 +28,17 @@ print("advertising...")
 client_socket, client_address = server_socket.accept()
 print("accept! ", client_address)
 
-# receive (Sub Thread<Demon>)
-''' 메인 스레드가 종료되면 자동으로 종료됩니다. '''
+# receive (Sub Thread)
 def receive():
     while True:
         try:
             data: str = client_socket.recv(1024).decode('utf-8')
             print("receive:", data)
 
-        except:
-            print("receive error")
+        except bluetooth.BluetoothError as bluetoothException:
+            print(bluetoothException)
             client_socket.close()
-            break
+            sys.exit(0)
 
 
 receive_thread = threading.Thread(target=receive)
@@ -51,7 +51,7 @@ while True:
         data = input("전송: ")
         client_socket.send(data)
 
-    except:
-        print("send error")
+    except bluetooth.BluetoothError as bluetoothException:
+        print(bluetoothException)
         client_socket.close()
-        break
+        sys.exit(0)
