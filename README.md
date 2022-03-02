@@ -174,6 +174,7 @@ Request confirmation
 import bluetooth
 import subprocess
 import threading
+import sys
 ```
 
 ​    
@@ -231,10 +232,10 @@ def receive():
       data: str = client_socket.recv(1024).decode('utf-8')
       print("receive:", data)
 
-    except:
-      print("receive error")
+    except bluetooth.BluetoothError as bluetoothException:
+      print(bluetoothException)
       client_socket.close()
-      break
+      sys.exit(0)
 
 
 receive_thread = threading.Thread(target=receive)
@@ -255,10 +256,10 @@ while True:
     data = input("전송: ")
     client_socket.send(data)
 
-  except:
-    print("send error")
+  except bluetooth.BluetoothError as bluetoothException:
+    print(bluetoothException)
     client_socket.close()
-    break
+    sys.exit(0)
 ```
 
 ​    
